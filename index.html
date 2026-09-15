@@ -43,7 +43,7 @@
           </p>
 
           <div class="hero-cta-group fade-in fade-in-delay-3">
-            <a href="https://stan.store/alignwithestelle/p/-why-youre-not-quantum-leaping-" target="_blank" rel="noopener" class="btn btn-primary">Reserve My Free Spot</a>
+            <button type="button" class="btn btn-primary" data-register-open>Reserve My Free Spot</button>
             <p class="hero-note">After registering, you'll also have the option to join the private WhatsApp Channel for reminders and webinar access updates.</p>
           </div>
         </div>
@@ -375,7 +375,7 @@
         <p class="final-date fade-in fade-in-delay-1">September 17 &amp; 18<br />7 PM New York Time (ET)</p>
 
         <div class="register-cta fade-in fade-in-delay-2" id="register">
-          <a href="https://stan.store/alignwithestelle/p/-why-youre-not-quantum-leaping-" target="_blank" rel="noopener" class="btn btn-primary">Reserve My Free Spot</a>
+          <button type="button" class="btn btn-primary" data-register-open>Reserve My Free Spot</button>
           <a href="https://whatsapp.com/channel/0029VbD154vB4hdOlEPIZT32" target="_blank" rel="noopener" class="btn btn-outline">Already registered? Join the WhatsApp Waiting List</a>
         </div>
       </div>
@@ -386,6 +386,36 @@
   <footer>
     <p>© 2026 Estelle · The Embodiment Reset · Free 2-Day Webinar</p>
   </footer>
+
+  <!-- ════════════════════════════════════════
+       REGISTRATION MODAL
+  ════════════════════════════════════════ -->
+  <div class="reg-overlay" id="regModal" hidden>
+    <div class="reg-dialog" role="dialog" aria-modal="true" aria-labelledby="reg-title">
+      <button type="button" class="reg-close" id="regClose" aria-label="Close">&times;</button>
+
+      <div class="reg-view" id="regFormView">
+        <span class="section-label">The Embodiment Reset</span>
+        <h3 id="reg-title">Reserve Your Free Spot</h3>
+        <p class="reg-sub">Enter your details and we'll save your place for the free 2-day webinar.</p>
+        <form id="regForm" novalidate>
+          <label class="sr-only" for="reg-name">First name</label>
+          <input type="text" id="reg-name" name="first_name" placeholder="First name" autocomplete="given-name" required />
+          <label class="sr-only" for="reg-email">Email address</label>
+          <input type="email" id="reg-email" name="email" placeholder="Email address" autocomplete="email" required />
+          <p class="reg-error" id="regError" role="alert" hidden></p>
+          <button type="submit" class="btn btn-primary" id="regSubmit">Reserve My Free Spot</button>
+        </form>
+      </div>
+
+      <div class="reg-view reg-success" id="regSuccessView" hidden>
+        <div class="final-ornament">&#10038; &#10038; &#10038;</div>
+        <h3>You're in! Your spot for The Embodiment Reset is reserved.</h3>
+        <p class="reg-sub">WhatsApp is where you'll get your webinar reminders and access updates &mdash; join the waiting list so you don't miss it.</p>
+        <a href="https://whatsapp.com/channel/0029VbD154vB4hdOlEPIZT32" target="_blank" rel="noopener" class="btn btn-primary">Join the WhatsApp Waiting List</a>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

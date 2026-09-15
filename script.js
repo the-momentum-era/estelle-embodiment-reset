@@ -215,3 +215,112 @@ setInterval(updateCountdown, 1000);
   updateDots();
   start();
 })();
+
+// Registration modal: opens on any "Reserve My Free Spot" button,
+// submits to Formspree asynchronously, keeps the visitor on this page.
+(function () {
+  const modal = document.getElementById('regModal');
+  if (!modal) return;
+
+  const dialog = modal.querySelector('.reg-dialog');
+  const form = document.getElementById('regForm');
+  const nameEl = document.getElementById('reg-name');
+  const emailEl = document.getElementById('reg-email');
+  const errorEl = document.getElementById('regError');
+  const submitBtn = document.getElementById('regSubmit');
+  const formView = document.getElementById('regFormView');
+  const successView = document.getElementById('regSuccessView');
+  const closeBtn = document.getElementById('regClose');
+
+  const ENDPOINT = 'https://formspree.io/f/moeqoyld';
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const submitLabel = submitBtn.textContent;
+  let submitting = false;
+  let lastFocus = null;
+
+  function openModal(trigger) {
+    lastFocus = trigger || document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add('reg-open');
+    setTimeout(function () { try { nameEl.focus(); } catch (e) {} }, 60);
+  }
+  function closeModal() {
+    modal.hidden = true;
+    document.body.classList.remove('reg-open');
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+  }
+
+  document.querySelectorAll('[data-register-open]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) { e.preventDefault(); openModal(btn); });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
+  function clearError() { errorEl.hidden = true; errorEl.textContent = ''; }
+  function setBusy(busy) {
+    submitting = busy;
+    submitBtn.disabled = busy;
+    submitBtn.textContent = busy ? 'Reserving…' : submitLabel;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (submitting) return; // guard against repeated clicks while processing
+    clearError();
+    nameEl.classList.remove('invalid');
+    emailEl.classList.remove('invalid');
+
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim();
+
+    if (!name) {
+      nameEl.classList.add('invalid'); nameEl.focus();
+      showError('Please enter your first name.');
+      return;
+    }
+    if (!email || !EMAIL_RE.test(email)) {
+      emailEl.classList.add('invalid'); emailEl.focus();
+      showError('Please enter a valid email address.');
+      return;
+    }
+
+    setBusy(true);
+
+    const data = new FormData();
+    data.append('first_name', name);
+    data.append('email', email);
+    data.append('_subject', 'Estelle Webinar Registration');
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: data
+    }).then(function (res) {
+      if (res.ok) {
+        formView.hidden = true;
+        successView.hidden = false;
+        if (dialog) dialog.scrollTop = 0;
+        return;
+      }
+      return res.json().then(function (body) {
+        let msg = 'Something went wrong. Please try again.';
+        if (body && body.errors && body.errors.length) {
+          msg = body.errors.map(function (x) { return x.message; }).join(' ');
+        }
+        showError(msg);
+        setBusy(false);
+      }).catch(function () {
+        showError('Something went wrong. Please try again.');
+        setBusy(false);
+      });
+    }).catch(function () {
+      showError('We couldn’t reach the server. Please check your connection and try again.');
+      setBusy(false);
+    });
+  });
+})();
